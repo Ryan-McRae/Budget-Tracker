@@ -65,7 +65,7 @@ class BudgetTracker:
             VALUES (?, ?)
         ''', (account_name, initial_balance))
         self.conn.commit()
-        print(f"✓ Account '{account_name}' set with balance: R{initial_balance:.2f}")
+        print(f"Account '{account_name}' set with balance: R{initial_balance:.2f}")
     
     def list_categories(self):
         """List all existing categories"""
@@ -82,7 +82,7 @@ class BudgetTracker:
             VALUES (?, ?)
         ''', (category_name, monthly_limit))
         self.conn.commit()
-        print(f"✓ Category '{category_name}' set with monthly limit: R{monthly_limit:.2f}")
+        print(f"Category '{category_name}' set with monthly limit: R{monthly_limit:.2f}")
     
     def add_expense(self, account_name: str, category: str, amount: float, description: str = ""):
         """Record a new expense"""
@@ -92,13 +92,13 @@ class BudgetTracker:
         cursor.execute('SELECT balance FROM accounts WHERE account_name = ?', (account_name,))
         account = cursor.fetchone()
         if not account:
-            print(f"✗ Account '{account_name}' not found. Please add it first.")
+            print(f"Account '{account_name}' not found. Please add it first.")
             return
         
         # Check if category exists
         cursor.execute('SELECT category_name FROM categories WHERE category_name = ?', (category,))
         if not cursor.fetchone():
-            print(f"✗ Category '{category}' not found. Please add it first.")
+            print(f"Category '{category}' not found. Please add it first.")
             return
         
         # Add transaction
@@ -117,7 +117,7 @@ class BudgetTracker:
         ''', (amount, account_name))
         
         self.conn.commit()
-        print(f"✓ Expense recorded: R{amount:.2f} from {account_name} for {category}")
+        print(f"Expense recorded: R{amount:.2f} from {account_name} for {category}")
     
     def view_accounts(self):
         """Display all bank accounts and their balances"""
@@ -406,7 +406,7 @@ def main():
             name = input("Account name: ").strip()
             balance = float(input("Current balance: ").strip())
             tracker.add_account(name, balance)
-            input("\nPress Enter to continue...")
+            input("\nEnter to continue")
         
         elif choice == '2':
             clear_screen()
@@ -423,7 +423,7 @@ def main():
             name = input("Category name (e.g., food, entertainment, petrol, savings): ").strip()
             limit = float(input("Monthly spending limit: ").strip())
             tracker.add_category(name, limit)
-            input("\nPress Enter to continue...")
+            input("\nEnter to continue...")
         
         elif choice == '3':
             clear_screen()
@@ -441,8 +441,8 @@ def main():
                         print(f"  {i}. {name:<20s} Balance: R{balance:>10.2f}")
                     print("="*50)
                 else:
-                    print("\n⚠ No accounts found. Please add an account first (option 1).")
-                    input("\nPress Enter to continue...")
+                    print("\nNo accounts found.")
+                    input("\nEnter to continue...")
                     break
                 
                 if categories:
@@ -453,11 +453,11 @@ def main():
                         print(f"  {i}. {name}")
                     print("="*50 + "\n")
                 else:
-                    print("\n⚠ No categories found. Please add a category first (option 2).")
+                    print("\n No categories found.")
                     input("\nPress Enter to continue...")
                     break
                 
-                print("(Type 'exit' in any field to return to main menu)\n")
+                print("(Type 'exit' to return to main menu)\n")
                 
                 account = input("Account name: ").strip()
                 if account.lower() == 'exit':
@@ -475,7 +475,7 @@ def main():
                     amount = float(amount_input)
                 except ValueError:
                     print("Invalid amount. Please try again.")
-                    input("\nPress Enter to continue...")
+                    input("\nPress Enter to continue")
                     continue
                 
                 desc = input("Description (optional): ").strip()
@@ -483,28 +483,28 @@ def main():
                     break
                 
                 tracker.add_expense(account, category, amount, desc)
-                print("\n✓ Expense added! Add another or type 'exit' to return.")
-                input("\nPress Enter to add another expense...")
+                print("\nExpense added!")
+                input("\nPress Enter to add another expense")
 
         
         elif choice == '4':
             clear_screen()
             tracker.view_accounts()
-            input("\nPress Enter to continue...")
+            input("\nPress Enter to continue")
         
         elif choice == '5':
             clear_screen()
             month = input("Month (YYYY-MM, or press Enter for current month): ").strip()
     
             tracker.monthly_overview(month if month else None)
-            input("\nPress Enter to continue...")
+            input("\nPress Enter to continue")
         
         elif choice == '6':
             clear_screen()
             month = input("Month (YYYY-MM, or press Enter for current month): ").strip()
          
             tracker.view_monthly_log(month if month else None)
-            input("\nPress Enter to continue...")
+            input("\nPress Enter to continue")
         
         elif choice == '7':
             clear_screen()
@@ -512,7 +512,7 @@ def main():
             month = input("Month (YYYY-MM, or press Enter for current month): ").strip()
            
             tracker.category_analysis(category, month if month else None)
-            input("\nPress Enter to continue...")
+            input("\nPress Enter to continue")
         
         elif choice == '8':
             clear_screen()
@@ -539,14 +539,14 @@ def main():
                 print("="*50 + "\n")
             else:
                 print("No accounts to delete.")
-                input("\nPress Enter to continue...")
+                input("\nPress Enter to continue")
                 continue
             
             account_name = input("Enter account name to delete (or press Enter to cancel): ").strip()
             if account_name:
                 tracker.delete_account(account_name)
             
-            input("\nPress Enter to continue...")
+            input("\nPress Enter to continue")
         
         elif choice == '10':
             clear_screen()
@@ -560,14 +560,14 @@ def main():
                 print("="*50 + "\n")
             else:
                 print("No categories to delete.")
-                input("\nPress Enter to continue...")
+                input("\nPress Enter to continue")
                 continue
             
             category_name = input("Enter category name to delete (or press Enter to cancel): ").strip()
             if category_name:
                 tracker.delete_category(category_name)
             
-            input("\nPress Enter to continue...")
+            input("\nPress Enter to continue")
         
         elif choice == '11':
             clear_screen()
@@ -576,7 +576,7 @@ def main():
         
         else:
             print("Invalid option. Please try again.")
-            input("\nPress Enter to continue...")
+            input("\nPress Enter to continue")
 
 
 if __name__ == "__main__":

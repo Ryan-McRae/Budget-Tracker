@@ -1,0 +1,15 @@
+from fastapi import FastAPI
+from routes import accounts
+from fastapi.middleware.cors import CORSMiddleware
+app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(accounts.router)

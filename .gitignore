@@ -1,0 +1,5 @@
+# Ignore SQLite database
+backend/budget.db
+
+# Ignore Python virtual environment
+backend/venv/

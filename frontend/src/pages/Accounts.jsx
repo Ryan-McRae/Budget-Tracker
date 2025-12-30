@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { Plus, useEffect, useState } from "react";
 import AccountButton from "../components/AccountButton";
 import AccountCard from "../components/AccountCard";
+import AddAccount from "../components/AddAccount";
+import ActionButton from "../components/ActionButton";
 
 export default function Accounts() {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [addAccount, setAddAccount] = useState(false);
   const fetchAccounts = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8000/accounts/");
@@ -21,6 +24,13 @@ export default function Accounts() {
 
   return (
     <div className="flex flex-col items-center mt-12 px-4 space-y-4 w-full">
+      <ActionButton
+        onClick={() => setAddAccount(true)}
+        variant="primary"
+        icon={Plus}
+      >
+        Add Account
+      </ActionButton>
       {/* Render buttons for each account */}
       {accounts.map((account) => (
         <AccountButton
@@ -29,6 +39,15 @@ export default function Accounts() {
           onClick={() => setSelectedAccount(account)}
         />
       ))}
+
+      {/* Render add acount if button is pressed*/}
+      {addAccount && (
+        <AddAccount
+          accounts={accounts}
+          setAccounts={setAccounts}
+          onClose={() => setAddAccount(false)}
+        />
+      )}
 
       {/* Render AccountCard if an account is selected */}
       {selectedAccount && (

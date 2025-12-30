@@ -1,9 +1,19 @@
 @import "tailwindcss";
+@tailwind utilities;
 
 @layer base {
   html, body, #root {
-    @apply min-h-screen bg-gray-100 text-gray-900;
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  body {
+    overflow: hidden;
+  }
+  
+  #root {
+    overflow: auto;
   }
 }

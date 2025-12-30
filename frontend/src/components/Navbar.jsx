@@ -9,7 +9,6 @@ export default function Navbar() {
 
         {/* Right: Other pages */}
         <nav className="flex space-x-4">
-          <NavButton to="/transactions" label="Transactions" />
           <NavButton to="/accounts" label="Accounts" />
           <NavButton to="/performance" label="Performance" />
           <NavButton to="/categories" label="Categories" />

@@ -1,32 +1,35 @@
 import React, { useState } from "react";
 import ActionButton from "../components/ActionButton";
+import RecordTransaction from "./RecordTransaction";
 
-export default function AccountCard({
-  account,
+export default function CategoryCard({
+  category,
   onClose,
-  accounts,
-  setAccounts,
-  fetchAccounts,
+  categories,
+  setCategories,
+  fetchCategories,
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(account.name);
-  const [editedAmount, setEditedAmount] = useState(account.amount);
+  const [editedLimit, setEditedLimit] = useState(category.limit);
+  const [isRecording, setIsRecording] = useState(false);
 
   const handleDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete ${account.name}?`))
+    if (!window.confirm(`Are you sure you want to delete ${category.name}?`))
       return;
 
     // Step 1: Optimistic UI
-    const originalAccounts = [...accounts];
-    const updatedAccounts = accounts.filter((acc) => acc.name !== account.name);
-    setAccounts(updatedAccounts); // remove immediately
+    const originalCategories = [...categories];
+    const updatedCategories = categories.filter(
+      (cat) => cat.name !== category.name
+    );
+    setCategories(updatedCategories); // remove immediately
     onClose(); // close the card
 
     // Step 2: Send request to backend
     try {
-      const payload = { account_name: account.name };
+      const payload = { category_name: category.name };
       const response = await fetch(
-        "http://127.0.0.1:8000/accounts/deleteAccount",
+        "http://127.0.0.1:8000/categories/deleteCategory",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -37,52 +40,54 @@ export default function AccountCard({
       if (!response.ok) {
         const error = await response.json();
         alert(`${error.detail}`);
-        setAccounts(originalAccounts); // rollback on error
+        setCategories(originalCategories); // rollback on error
       }
     } catch (err) {
       console.error(err);
-      setAccounts(originalAccounts); // rollback
-      alert("Failed to delete account!");
+      setCategories(originalCategories); // rollback
+      alert("Failed to delete category!");
     }
   };
 
   const handleSave = async () => {
     const payload = {
-      old_name: account.name, // original name
-      new_name: editedName, // possibly changed
-      amount: parseFloat(editedAmount),
+      cat_name: category.name, // original name
+      limit: parseFloat(editedLimit),
     };
 
     // Step 1: Optimistic update
-    const originalAccounts = [...accounts];
-    const updatedAccounts = accounts.map((acc) =>
-      acc.name === account.name
-        ? { name: editedName, amount: parseFloat(editedAmount) }
-        : acc
+    const originalCategories = [...categories];
+    const updatedCategories = categories.map((cat) =>
+      cat.name === category.name
+        ? { name: category.name, limit: parseFloat(editedLimit) }
+        : cat
     );
-    setAccounts(updatedAccounts);
+    setCategories(updatedCategories);
     onClose();
 
     // Step 2: Send request
     try {
-      const response = await fetch("http://127.0.0.1:8000/accounts/update", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/categories/updateCategory",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
         alert(`${error.detail}`);
-        setAccounts(originalAccounts); // rollback on error
+        setCategories(originalCategories); // rollback on error
         return;
       }
 
       // Step 3: Optional re-fetch
-      fetchAccounts();
+      fetchCategories();
     } catch (err) {
       console.error(err);
-      setAccounts(originalAccounts); // rollback
+      setCategories(originalCategories); // rollback
       alert("Failed to save changes!");
     }
   };
@@ -91,7 +96,7 @@ export default function AccountCard({
     <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
       <div className="bg-neutral-800 text-white rounded-lg p-8 w-11/12 max-w-3xl shadow-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">{account.name}</h2>
+          <h2 className="text-2xl font-bold">{category.name}</h2>
           <button
             onClick={onClose}
             className="text-white hover:text-cyan-400 font-bold text-xl"
@@ -102,7 +107,7 @@ export default function AccountCard({
 
         {!isEditing ? (
           <>
-            <p className="mb-4">Balance: R {account.amount.toFixed(2)}</p>
+            <p className="mb-4">Limit: R {category.limit.toFixed(2)}</p>
 
             {/* Action buttons */}
             <div className="flex space-x-4">
@@ -115,25 +120,31 @@ export default function AccountCard({
               <ActionButton onClick={handleDelete} variant="secondary">
                 Delete
               </ActionButton>
+
+              <ActionButton
+                onClick={() => setIsRecording(true)}
+                variant="primary"
+              >
+                Record Transaction
+              </ActionButton>
             </div>
+            {isRecording && (
+              <RecordTransaction
+                categoryName={category.name}
+                onClose={() => setIsRecording(false)}
+              />
+            )}
           </>
         ) : (
           <>
             {/* Editable form */}
             <div className="flex flex-col space-y-4 mb-4">
               <input
-                type="text"
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
-                className="p-2 rounded bg-zinc-600 text-white"
-                placeholder="Account Name"
-              />
-              <input
                 type="number"
-                value={editedAmount}
-                onChange={(e) => setEditedAmount(parseFloat(e.target.value))}
+                value={editedLimit}
+                onChange={(e) => setEditedLimit(parseFloat(e.target.value))}
                 className="p-2 rounded bg-zinc-600 text-white"
-                placeholder="Amount"
+                placeholder="Limit"
               />
             </div>
 
